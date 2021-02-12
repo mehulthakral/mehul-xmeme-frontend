@@ -1,0 +1,162 @@
+<!DOCTYPE html> 
+<html lang="en">
+    <head>
+        <title>XMeme - Meme Stream Application</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        <style>
+          .card{
+            padding: 10px;
+            margin: 20px;
+          }
+          .flex-container {
+            display: flex;
+            justify-content: space-around;
+          }
+        </style>
+    </head>
+    <body>
+
+        <!-- navbar-fixed-top -->
+        <nav class="navbar navbar-inverse navbar-expand-lg "> 
+            <div class="container-fluid">
+              <div class="navbar-header">
+                <a class="navbar-brand" href="#">XMeme - Meme Stream Application</a>
+              </div>
+            </div>
+        </nav>
+
+        <div class="container">
+            <button type="button" class="btn btn-info btn-block" data-toggle="collapse" data-target="#form">Add Meme</button>
+            <br>
+            <form class="collapse form-horizontal" id="form" onSubmit="submitMeme(event)">
+                <br>
+                <div class="form-group">
+                  <label class="control-label col-sm-2" for="name">Meme Owner:</label>
+                  <div class="col-sm-10">
+                    <input type="text" class="form-control" id="name" name="name" placeholder="Enter your full name">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-sm-2" for="caption">Caption:</label>
+                  <div class="col-sm-10">
+                    <input type="text" class="form-control" id="caption" name="caption" placeholder="Be creative with the caption">
+                  </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-2" for="url">Meme URL:</label>
+                    <div class="col-sm-10">
+                      <input type="url" class="form-control" id="url" name="url" placeholder="Enter Meme URL">
+                    </div>
+                </div>
+                <div class="form-group">
+                  <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" id="submit" class="btn btn-success">Submit</button>
+                  </div>
+                </div>
+              </form>
+              <hr>
+              <div id="memes">
+
+              </div>
+        </div>
+        
+    </body>
+    <script>
+        var backend_url = "http://127.0.0.1:8081";
+        function getMemes()
+        {
+            $.ajax( {
+                  url:backend_url+'/memes',
+                  method:"GET",
+                  success:function(data) {
+                    // console.log(data);
+                    // console.log(typeof data);
+                    $("#memes").html("");
+                    for(var i=0; i<data.length; i++)
+                    {
+                        // console.log(data[i]["id"] + " " + data[i]["caption"]);
+                        var meme = document.createElement("div");
+                        meme.classList.add("col-sm-3","thumbnail","card");
+                        var name = document.createElement("b");
+                        name.innerHTML = data[i]["name"];
+                        var caption = document.createElement("i");
+                        caption.innerHTML = "<br>"+data[i]["caption"];
+                        meme.appendChild(name);
+                        meme.appendChild(caption);
+                        var img = document.createElement("img");
+                        img.src = data[i]["url"];
+                        img.alt = data[i]["caption"];
+                        img.width = "300";
+                        img.height = "150";
+                        img.classList.add("img-responsive");
+                        meme.appendChild(img);
+                        $("#memes").append(meme);
+                    }
+                  },
+                  error: function(xhr, textStatus, errorThrown){
+                    // var output=document.getElementById("output");
+                    // output.innerHTML="<br><div class='vertical-center'>Syntax Error !</div>"
+                    console.log(textStatus);
+                  }
+            });
+        }
+
+        function submitMeme(event)
+        {
+            event.preventDefault();
+            var memeInfo = {"name":$("#name").val(),"url":$("#url").val(),"caption":$("#caption").val()};
+            // alert("Request Sent " + toString(obj));
+            console.log(memeInfo);
+            console.log($("#name").val());
+            $.ajax( {
+                    url:backend_url+'/memes',
+                    data:JSON.stringify({"name":$("#name").val(),"url":$("#url").val(),"caption":$("#caption").val()}),
+                    // data:JSON.stringify({"name":"mehul","url":"https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Example_of_modern_internet_meme.jpg/220px-Example_of_modern_internet_meme.jpg","caption":"Some Caption"}),
+                    method:"POST",
+                    contentType: "application/json",
+                    crossDomain:true,
+                    headers: {
+                        "accept": "application/json",
+                        "Access-Control-Allow-Origin":"*"
+                    },
+                    success:function(data) {
+                        getMemes();
+                    },
+                    error: function(xhr, textStatus, errorThrown){
+                        console.log(textStatus);
+                    }
+                });
+        }
+
+        $(function(){
+
+            // jQuery methods go here...
+            getMemes();
+
+            // $("#submit").click(function(){
+                
+            //     obj = {"name":$("#name").val(),"url":$("#url").val(),"caption":$("#caption").val()};
+            //     alert("Request Sent " + toString(obj));
+            //     // alert("name " + $("#name").val());
+            //     // $.ajax( {
+            //     //     url:'http://localhost:5000/memes',
+            //     //     data:JSON.stringify(obj),
+            //     //     method:"POST",
+            //     //     success:function(data) {
+            //     //         getMemes();
+            //     //     },
+            //     //     error: function(xhr, textStatus, errorThrown){
+            //     //         console.log(textStatus);
+            //     //     }
+            //     // });
+
+            // });
+
+        });
+    </script>
+</html>
+
