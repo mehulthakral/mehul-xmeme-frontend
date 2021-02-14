@@ -242,7 +242,9 @@
                     crossDomain:true,
                     headers: {
                         "accept": "application/json",
-                        "Access-Control-Allow-Origin":"*"
+                        "Access-Control-Allow-Origin":"*",
+                        "Access-Control-Allow-Headers":"*",
+                        "Access-Control-Allow-Methods":"*"
                     },
                     success:function(data) {
                         getMemes();
@@ -264,11 +266,14 @@
                       url:backend_url+'/memes/'+$("#edit-id").val(),
                       data:JSON.stringify({"url":$("#edit-url").val(),"caption":$("#edit-caption").val()}),
                       method:"PATCH",
-                      contentType: "application/json",
+                      // contentType: "application/json",
                       crossDomain:true,
                       headers: {
-                          "accept": "application/json",
-                          "Access-Control-Allow-Origin":"*"
+                          'Content-Type' : 'application/json'
+                          // "accept": "application/text",
+                          // "Access-Control-Allow-Origin":"*",
+                          // "Access-Control-Allow-Headers":"*",
+                          // "Access-Control-Allow-Methods":"*"
                       },
                       success:function(data) {
                           getMemes();
